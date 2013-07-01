@@ -19,6 +19,7 @@ public class MouseDetect extends Applet implements MouseMotionListener,
 	String drawText = "";
 	boolean seizure = false;
 	int boxX1, boxY1, boxX2, boxY2;
+	boolean move = true;
 
 	public void init() {
 		boxX2 = 20;
@@ -107,16 +108,21 @@ public class MouseDetect extends Applet implements MouseMotionListener,
 			drawText = "on green rectangle!";
 		}
 	}
-
+	int moveLocationX;
+	int moveLocationY;
 	public void mouseDragged(MouseEvent e) {
-		x = e.getX();
-		y = e.getY();
-		if (boxX1 < x && x < boxX2 && boxY1 < x && x < boxY2) {
-			int moveLocationX = x - boxX1;
-			int moveLocationY = x - boxY1;
+		if (move) {
+			x = e.getX();
+			y = e.getY();
+			moveLocationX = x - boxX1;
+			moveLocationY = x - boxY1;
 			boxX1 = moveLocationX;
 			boxY1 = moveLocationY;
+			boxX2 = moveLocationX;
+			boxY2 = moveLocationY;
+
 		}
+
 	}
 
 	@Override
@@ -126,14 +132,23 @@ public class MouseDetect extends Applet implements MouseMotionListener,
 
 	@Override
 	public void mousePressed(MouseEvent e) {
-		//seizure = true;
-
+		// seizure = true;
+		x = e.getX();
+		y = e.getY();
+		if (boxX1 < x && x < boxX2 && boxY1 < y && y < boxY2) {
+			move = true;
+		}
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent e) {
-		//seizure = false;
-
+		// seizure = false;
+		if (move) {
+			boxX1 = moveLocationX;
+			boxY1 = moveLocationY;
+			boxX2 = moveLocationX;
+			boxY2 = moveLocationY;
+		}
 	}
 
 	@Override
