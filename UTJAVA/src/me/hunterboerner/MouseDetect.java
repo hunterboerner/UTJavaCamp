@@ -10,6 +10,9 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.io.IOException;
+
+import me.hunterboerner.yaml.Configuration;
 
 @SuppressWarnings("serial")
 public class MouseDetect extends Applet implements MouseMotionListener,
@@ -24,8 +27,22 @@ public class MouseDetect extends Applet implements MouseMotionListener,
 	boolean move = true;
 	int a = 0;
 	String drawWords = "";
+	boolean seizureDrawRun = true;
+	boolean loaded = false;
+
+
 
 	public void init() {
+		
+		if(!loaded){
+			try {
+				Configuration.loadFromStream();
+				loaded = true;
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+		
 		boxX2 = 20;
 		boxY2 = 20;
 		width = getSize().width;
@@ -45,7 +62,7 @@ public class MouseDetect extends Applet implements MouseMotionListener,
 
 	public Color seizure(int number) {
 		if (number == 0) {
-			return Color.red;
+			return Color.pink;
 		} else if (number == 1) {
 			return Color.orange;
 		} else if (number == 2) {
@@ -86,11 +103,13 @@ public class MouseDetect extends Applet implements MouseMotionListener,
 			} else {
 				a = 0;
 			}
+			
 			g.setColor(seizure(i));
 			g.fillRect(0, 0, width, height);
 			g.setFont(g.getFont().deriveFont(100.0F));
 			g.setColor(Color.green);
 			g.drawString(drawWords, 100, 100);
+			g.setColor(Color.black);
 
 		}
 
@@ -110,9 +129,9 @@ public class MouseDetect extends Applet implements MouseMotionListener,
 		}
 	}
 
-	public void mouseMoved(MouseEvent e) {
-		x = e.getX();
-		y = e.getY();
+	public void UpdateMouse() {
+		x = (int) getMousePosition().getX();
+		y = (int) getMousePosition().getY();
 		showStatus("Mouse Position: (" + x + ", " + y + ")");
 
 		if (width / 3 < x && x < width / 3 * 2) {
@@ -124,6 +143,11 @@ public class MouseDetect extends Applet implements MouseMotionListener,
 		if (x < width / 3) {
 			drawText = "on green rectangle!";
 		}
+		paint(getGraphics());
+	}
+
+	public void mouseMoved(MouseEvent e) {
+		UpdateMouse();
 	}
 
 	int moveLocationX;
@@ -170,7 +194,7 @@ public class MouseDetect extends Applet implements MouseMotionListener,
 
 	@Override
 	public void mouseEntered(MouseEvent e) {
-
+		UpdateMouse();
 	}
 
 	@Override
@@ -207,7 +231,6 @@ public class MouseDetect extends Applet implements MouseMotionListener,
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		// TODO Auto-generated method stub
 
 	}
 
