@@ -79,8 +79,9 @@ public class Breakout extends GraphicsProgram {
 	/** Runs the Breakout program. */
 
 	public void run() {
-
-		generateBricks(NBRICK_ROWS, NBRICKS_PER_ROW, BRICK_WIDTH, BRICK_HEIGHT);
+		resize(APPLICATION_WIDTH, APPLICATION_HEIGHT);
+		generateBricks(NBRICK_ROWS, NBRICKS_PER_ROW, BRICK_WIDTH, BRICK_HEIGHT,
+				BRICK_Y_OFFSET);
 	}
 
 	/**
@@ -92,11 +93,13 @@ public class Breakout extends GraphicsProgram {
 	 *            width of bricks in pixels
 	 * @param brickHeight
 	 *            height of bricks in pixels
+	 * @param brickYOffset
+	 *            offset from top
 	 **/
 	private void generateBricks(int numOfRow, int numOfBricks, int brickWidth,
-			int brickHeight) {
+			int brickHeight, int brickYOffset) {
 		int x = (getWidth() - (numOfBricks * brickWidth)) / 4;
-		int y = getHeight() / 8;
+		int y = brickYOffset;
 		for (int i = 0; i < numOfRow; i++) {
 			for (int j = 0; j < numOfBricks; j++) {
 				GRect brick = new GRect(x, y, brickWidth, brickHeight);
@@ -105,6 +108,18 @@ public class Breakout extends GraphicsProgram {
 				brick.setFilled(true);
 				add(brick);
 				x = x + brickWidth + 2;
+				try {
+					Thread.sleep(100);
+				} catch (InterruptedException e) {
+
+					e.printStackTrace();
+				}
+
+			}
+			try {
+				Thread.sleep(500);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 			x = (getWidth() - (numOfBricks * brickWidth)) / 4;
 			y = y + brickHeight + 2;
