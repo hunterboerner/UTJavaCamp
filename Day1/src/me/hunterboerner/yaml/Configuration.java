@@ -64,8 +64,8 @@ public final class Configuration {
 
 			@SuppressWarnings("unchecked")
 			Map<String, Object> data = (Map<String, Object>) yaml.load(input);
-			String[] dataSplit = data.get(key));
-			System.out.println(dataSplit);
+			//String[] dataSplit = data.get(key));
+			//System.out.println(dataSplit);
 			debug = data.toString();
 			System.out.println(debug.lastIndexOf("debug"));
 			
