@@ -9,19 +9,24 @@ package me.hunterboerner.breakout;
  * This file will eventually implement the game of Breakout.
  */
 
-import acm.graphics.*;
-import acm.program.*;
-import acm.util.*;
+import java.applet.AudioClip;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.event.KeyEvent;
+import java.awt.event.MouseEvent;
 
-import java.applet.*;
-import java.awt.*;
-import java.awt.event.*;
-import java.util.ArrayList;
+import acm.graphics.GLabel;
+import acm.graphics.GObject;
+import acm.graphics.GOval;
+import acm.graphics.GRect;
+import acm.program.GraphicsProgram;
+import acm.util.MediaTools;
+import acm.util.RandomGenerator;
 
 public class Breakout extends GraphicsProgram {
 	/** Width and height of application window in pixels */
-	public static final int APPLICATION_WIDTH = 400;
-	public static final int APPLICATION_HEIGHT = 600;
+	public static final int APPLICATION_WIDTH = 500;
+	public static final int APPLICATION_HEIGHT = 800;
 
 	/** Dimensions of the paddle */
 	private static final int PADDLE_WIDTH = 60;
@@ -34,7 +39,7 @@ public class Breakout extends GraphicsProgram {
 	private static final int NBRICKS_PER_ROW = 10;
 
 	/** Number of rows of bricks */
-	private static final int NBRICK_ROWS = 10;
+	private static final int NBRICK_ROWS = 8;
 
 	/** Separation between bricks */
 	private static final int BRICK_SEP = 4;
@@ -54,22 +59,29 @@ public class Breakout extends GraphicsProgram {
 	/** Offset of the top brick row from the top */
 	private static final int BRICK_Y_OFFSET = 70;
 
-	/** Number of turns */
-	private static final int NTURNS = 3;
+	/** Number of lives */
+	private int lives = 3;
 
-	/** Initial Y velocity */
-	private static final double Y_VELOCITY = 3.0;
-
-	/** Delay between ball updates */
-	private static final int ANIMATION_PAUSE = 10;
+	// /** Delay between ball updates */
+	// private static final int ANIMATION_PAUSE = 10;
 
 	// Declaration of all the instance variables
 	private GRect paddle;
 	private GOval ball;
 	private GLabel messageLabel;
+	private GRect wall;
 	private int numBricksLeft = NUMBER_BRICKS;
 	private RandomGenerator rgen = RandomGenerator.getInstance();
 	AudioClip bounceClip = MediaTools.loadAudioClip("bounce.au");
+
+	private double xv = -3.0;
+	private double yv = -3.0;
+	boolean run = false;
+	boolean started = false;
+	boolean gameRun = true;
+	Font font = new Font("Courier New", Font.BOLD, 72);
+
+	int livesUsed = 0;
 
 	public static void main(String[] args) {
 		new Breakout().start(args);
@@ -79,9 +91,190 @@ public class Breakout extends GraphicsProgram {
 	/** Runs the Breakout program. */
 
 	public void run() {
-		resize(APPLICATION_WIDTH, APPLICATION_HEIGHT);
+		messageLabel = new GLabel("", getWidth() / 2, getHeight() / 2);
+		addMouseListeners();
+		addKeyListeners();
+		runGame();
+	}
+
+	public void runGame() {
+		while (gameRun) {
+			resize(APPLICATION_WIDTH, APPLICATION_HEIGHT);
+			setLabel("Press Key");
+
+			if (started) {
+
+				for (livesUsed = 0; livesUsed < lives; livesUsed++) {
+					try {
+						Thread.sleep(1000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					setLabel("");
+
+					drawElements();
+					run = true;
+					runLevel();
+				}
+			}
+
+		}
+
+	}
+
+	/**
+	 * Runs the game
+	 */
+	public void runLevel() {
+		xv = -3.0;
+		yv = -3.0;
+		while (run == true) {
+			updateBall();
+			try {
+				Thread.sleep(10);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	public void drawElements() {
 		generateBricks(NBRICK_ROWS, NBRICKS_PER_ROW, BRICK_WIDTH, BRICK_HEIGHT,
 				BRICK_Y_OFFSET);
+		createPaddle(PADDLE_WIDTH, PADDLE_HEIGHT, PADDLE_Y_OFFSET);
+		createBall(BALL_RADIUS);
+		createWall();
+	}
+
+	/**
+	 * 
+	 * @param width
+	 *            App Width
+	 * @param height
+	 *            App Height
+	 */
+	public void createWall() {
+		wall = new GRect(2, 2, getWidth() - 4, getHeight() - 4);
+		add(wall);
+	}
+
+	/**
+	 * @param ballRadius
+	 *            radius of dem ballz
+	 * 
+	 **/
+	public void createBall(int ballRadius) {
+		ball = new GOval(getWidth() / 2 - ballRadius, getHeight() / 2
+				- ballRadius, ballRadius * 2, ballRadius * 2);
+		ball.setFilled(true);
+		add(ball);
+	}
+
+	/**
+	 * @param pWidth
+	 *            paddle width
+	 * @param pHeight
+	 *            paddle height
+	 * @param pOffset
+	 *            paddle offset
+	 **/
+	public void createPaddle(int pWidth, int pHeight, int pOffset) {
+		// paddle.setBounds(getWidth() / 2, getHeight() - pOffset, pWidth,
+		// pHeight);
+		paddle = new GRect(getWidth() / 2 - pWidth / 2, getHeight() - pOffset,
+				pWidth, pHeight);
+		paddle.setFilled(true);
+		add(paddle);
+	}
+
+	/**
+	 * @param x
+	 *            X coord
+	 * @param y
+	 *            Y coord
+	 **/
+	public void movePaddle(int x, int y) {
+		if (paddle != null) {
+			paddle.setLocation(x, paddle.getY());
+			paddle.setColor(Color.black);
+			add(paddle);
+		}
+
+	}
+
+	public void setLabel(String label) {
+		messageLabel.setLocation(getWidth() / 2
+				- (getFontMetrics(font).stringWidth(label) / 2),
+				(getHeight() / 2) - font.getSize() / 2);
+		messageLabel.setLabel(label);
+		messageLabel.setFont(font);
+		messageLabel.setColor(Color.black);
+		// remove(messageLabel);
+		add(messageLabel);
+	}
+
+	public void updateBall() {
+		if (ball.getY() > (getHeight() - PADDLE_Y_OFFSET)) {
+			run = false;
+			removeAll();
+			if ((lives - livesUsed - 1) == 0) {
+				setLabel("LOSER");
+				gameRun = false;
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				System.exit(0);
+				;
+			} else {
+				setLabel("Lives: " + (lives - livesUsed - 1));
+				println("labelset");
+			}
+
+		} else {
+			if ((ball.getX() + BALL_RADIUS * 2) > getWidth()) {
+				xv = -xv;
+			}
+			if ((ball.getY() + BALL_RADIUS * 2) > getHeight()) {
+				yv = -yv;
+			}
+			if (ball.getX() < 0) {
+				xv = -xv;
+			}
+			if (ball.getY() < 0) {
+				yv = -yv;
+			}
+			if (getCollidingObject() != null) {
+				if (getCollidingObject() == paddle) {
+				} else if (getCollidingObject() != messageLabel
+						|| getCollidingObject() != ball) {
+					remove(getCollidingObject());
+					numBricksLeft--;
+					if (numBricksLeft < 0) {
+						run = false;
+						removeAll();
+						setLabel("WiNnEr");
+						livesUsed = 3;
+					}
+				}
+				bounceClip.play();
+				yv = -yv;
+
+			}
+
+			ball.setLocation(ball.getX() + xv, ball.getY() + yv);
+		}
+	}
+
+	public void mouseMoved(MouseEvent e) {
+		if (run) {
+			movePaddle(e.getX(), e.getY());
+		}
+	}
+
+	public void keyTyped(KeyEvent e) {
+		started = true;
 	}
 
 	/**
@@ -96,7 +289,7 @@ public class Breakout extends GraphicsProgram {
 	 * @param brickYOffset
 	 *            offset from top
 	 **/
-	private void generateBricks(int numOfRow, int numOfBricks, int brickWidth,
+	public void generateBricks(int numOfRow, int numOfBricks, int brickWidth,
 			int brickHeight, int brickYOffset) {
 		int x = (getWidth() - (numOfBricks * brickWidth)) / 4;
 		int y = brickYOffset;
@@ -109,7 +302,7 @@ public class Breakout extends GraphicsProgram {
 				add(brick);
 				x = x + brickWidth + 2;
 				try {
-					Thread.sleep(100);
+					Thread.sleep(10);
 				} catch (InterruptedException e) {
 
 					e.printStackTrace();
@@ -117,7 +310,7 @@ public class Breakout extends GraphicsProgram {
 
 			}
 			try {
-				Thread.sleep(500);
+				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}

@@ -10,7 +10,7 @@ import acm.util.RandomGenerator;
 
 public class SeuratGenerator extends GraphicsProgram {
 
-	private static final int SPLOTCH_DIAMETER = 10;
+	private static final int SPLOTCH_DIAMETER = 5;
 
 	private RandomGenerator rgen = new RandomGenerator();
 
@@ -36,7 +36,8 @@ public class SeuratGenerator extends GraphicsProgram {
 		boolean ran = false;
 		int dotCount = 0;
 		double size = (Math.pow(SPLOTCH_DIAMETER / 2, 2) * Math.PI);
-		double check = ((windowWidth * windowHeight) / size) * 10;
+		// double check = ((windowWidth * windowHeight) / size) * 10;
+		double check = 1000000.0;
 
 		// GImage myImage = new GImage(
 		// "/Users/theron/Desktop/UTJavaCamp/AnimationSoln/images/16497173.jpg");
@@ -114,5 +115,4 @@ public class SeuratGenerator extends GraphicsProgram {
 		// this syntax is not very nice and you don't need to understand it.
 		return new Color(pixelArray[y][x]);
 	}
-
 }
