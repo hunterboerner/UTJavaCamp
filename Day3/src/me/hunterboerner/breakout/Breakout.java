@@ -14,6 +14,7 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
+import java.io.IOException;
 
 import acm.graphics.GLabel;
 import acm.graphics.GObject;
@@ -36,10 +37,10 @@ public class Breakout extends GraphicsProgram {
 	private static final int PADDLE_Y_OFFSET = 30;
 
 	/** Number of bricks per row */
-	private static final int NBRICKS_PER_ROW = 1;
+	private static final int NBRICKS_PER_ROW = 8;
 
 	/** Number of rows of bricks */
-	private static final int NBRICK_ROWS = 2;
+	private static final int NBRICK_ROWS = 8;
 
 	/** Separation between bricks */
 	private static final int BRICK_SEP = 4;
@@ -83,6 +84,8 @@ public class Breakout extends GraphicsProgram {
 
 	int livesUsed = 0;
 
+	Scoreboard scoreboard;
+
 	public static void main(String[] args) {
 		new Breakout().start(args);
 	}
@@ -94,6 +97,7 @@ public class Breakout extends GraphicsProgram {
 		messageLabel = new GLabel("", getWidth() / 2, getHeight() / 2);
 		addMouseListeners();
 		addKeyListeners();
+
 		runGame();
 	}
 
@@ -126,6 +130,16 @@ public class Breakout extends GraphicsProgram {
 	 * Runs the game
 	 */
 	public void runLevel() {
+		scoreboard = new Scoreboard("Score: ", "High Score: ", 50,
+				getHeight() / 25, 36);
+		add(scoreboard.currentScoreLabel);
+		add(scoreboard.highScoreLabel);
+		scoreboard.scoreReset();
+		try {
+			scoreboard.loadScore();
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
 		xv = -3.0;
 		yv = -3.0;
 		while (run == true) {
@@ -213,6 +227,16 @@ public class Breakout extends GraphicsProgram {
 		add(messageLabel);
 	}
 
+	public void closeGame() {
+		try {
+			Thread.sleep(5000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
+		System.exit(0);
+
+	}
+
 	public void updateBall() {
 		if (ball.getY() > (getHeight() - PADDLE_Y_OFFSET)) {
 			run = false;
@@ -220,30 +244,28 @@ public class Breakout extends GraphicsProgram {
 			if ((lives - livesUsed - 1) == 0) {
 				setLabel("LOSER");
 				gameRun = false;
-				try {
-					Thread.sleep(5000);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				System.exit(0);
-				;
+				closeGame();
 			} else {
+				numBricksLeft = NUMBER_BRICKS;
 				setLabel("Lives: " + (lives - livesUsed - 1));
-				println("labelset");
 			}
 
 		} else {
 			if ((ball.getX() + BALL_RADIUS * 2) > getWidth()) {
 				xv = -xv;
+				bounceClip.play();
 			}
 			if ((ball.getY() + BALL_RADIUS * 2) > getHeight()) {
 				yv = -yv;
+				bounceClip.play();
 			}
 			if (ball.getX() < 0) {
 				xv = -xv;
+				bounceClip.play();
 			}
 			if (ball.getY() < 0) {
 				yv = -yv;
+				bounceClip.play();
 			}
 			if (getCollidingObject() != null) {
 				if (getCollidingObject() == paddle) {
@@ -251,16 +273,23 @@ public class Breakout extends GraphicsProgram {
 						|| getCollidingObject() != ball) {
 					remove(getCollidingObject());
 					numBricksLeft--;
+					scoreboard.addScore();
+					try {
+						scoreboard.saveScore();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
 					if (numBricksLeft < 0) {
 						run = false;
+						gameRun = false;
 						removeAll();
 						setLabel("WiNnEr");
 						livesUsed = 3;
+						closeGame();
 					}
 				}
-				bounceClip.play();
 				yv = -yv;
-
+				bounceClip.play();
 			}
 
 			ball.setLocation(ball.getX() + xv, ball.getY() + yv);
