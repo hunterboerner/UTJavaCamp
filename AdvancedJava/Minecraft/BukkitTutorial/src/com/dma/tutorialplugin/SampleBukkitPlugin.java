@@ -1,6 +1,9 @@
 package com.dma.tutorialplugin;
 
+import org.bukkit.craftbukkit.libs.org.ibex.nestedvm.util.Seekable;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
 
 /*
  * This is the main class of the sample plug-in
@@ -12,6 +15,7 @@ public final class SampleBukkitPlugin extends JavaPlugin {
     @Override
     public void onEnable() {
         // save the configuration file
+
         saveDefaultConfig();
         
         // Create the SampleBukkitPluginListener

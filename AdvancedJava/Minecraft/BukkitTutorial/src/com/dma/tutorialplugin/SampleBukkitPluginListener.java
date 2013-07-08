@@ -1,12 +1,12 @@
 package com.dma.tutorialplugin;
 
-import java.text.MessageFormat;
-
 import org.bukkit.entity.EntityType;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+
+import java.text.MessageFormat;
 
 /*
  * This is a sample event listener
@@ -20,9 +20,10 @@ public class SampleBukkitPluginListener implements Listener {
     public SampleBukkitPluginListener(SampleBukkitPlugin plugin) {
         // Register the listener
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
-        
+
         this.plugin = plugin;
     }
+
 
     /*
      * Send the sample message to all players that join
@@ -31,7 +32,7 @@ public class SampleBukkitPluginListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent event) {
         event.getPlayer().sendMessage(this.plugin.getConfig().getString("sample.message"));
     }
-    
+
     /*
      * Another example of a event handler. This one will give you the name of
      * the entity you interact with, if it is a Creature it will give you the
