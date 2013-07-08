@@ -1,0 +1,15 @@
+name: DungeonMazeMod
+main: com.dma.dungeonmazemod.DungeonMaze
+version: 0.1.5.4
+author: timvisee, kierancoulter
+authors: [timvisee,Xephi,kcoul]
+load: startup
+softdepend: [Multiverse-Core,PermissionsBukkit,Permissions,PermissionsEX,EssentialsGroupManager]
+dev-url: http://dev.bukkit.org/server-mods/safe-creeper/
+commands:
+  dm:
+    description: Dungeon Maze command
+    usage: /dm
+  dungeonmaze:
+    description: Dungeon Maze command
+    usage: /dungeonmaze
