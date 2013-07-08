@@ -6,3 +6,8 @@
 *.ear
 .metadata
 INFOHELPSTUFF/
+
+# Intellij
+.idea/
+*.iml
+*.iws
