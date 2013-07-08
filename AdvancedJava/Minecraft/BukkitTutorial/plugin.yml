@@ -1,0 +1,33 @@
+# This is a sample plugin.yml
+# For more infomration refer to http://wiki.bukkit.org/Plugin_YAML
+# This file uses maven resource filtering to fill in values at compile time
+main: com.dma.tutorialplugin.SampleBukkitPlugin
+name: SampleBukkitPlugin
+version: 0.0.1-SNAPSHOT
+author: ExampleAuthor
+description: This is a sample plugin for CraftBukkit
+commands:
+  fly:
+    description: jumps to surface - if not in DungeonMaze world, very uplifting!
+    usage: /<command> 
+    permission: sample.message
+  warp:
+    description: jumps to bottom of DungeonMaze - if not in DungeonMaze world, very dangerous!
+    usage: /<command> 
+    permission: sample.message
+  maketunnel:
+    description: generates air in front of users location
+    usage: /<command>
+  maketower:
+    description: generates tower in front of users location
+    usage: /<command>   
+  makestruct:
+    description: generates structure in front of users location
+    usage: /<command> 
+  gotobottom:
+    description: brings player to bottom of DungeonMaze!
+    usage: /<command>  
+  upalevel:
+    description: brings player up 6 y units, enough to go up a floor most of the time.
+    usage: /<command>  
+permissions:

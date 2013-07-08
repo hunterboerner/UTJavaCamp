@@ -1,0 +1,3 @@
+name: testplugin
+main: com.dma.testplugin.Example
+version: 0.01
