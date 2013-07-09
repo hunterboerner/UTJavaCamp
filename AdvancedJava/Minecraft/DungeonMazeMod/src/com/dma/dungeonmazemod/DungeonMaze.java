@@ -582,7 +582,7 @@ public class DungeonMaze extends JavaPlugin {
 	}
 	
 	public static void addConstantChunk(String world, int chunkX, int chunkZ) {
-		if (lastWorld != world) {
+		if (!lastWorld.equals(world)) {
 			lastWorld = world;
 			constantChunks.clear();
 		}
@@ -598,7 +598,7 @@ public class DungeonMaze extends JavaPlugin {
 	}
 	
 	public static void addConstantRooms(String world, int roomX, int roomY, int roomZ) {
-		if (lastWorld != world) {
+		if (!lastWorld.equals(world)) {
 			lastWorld = world;
 			constantRooms.clear();
 		}
@@ -610,7 +610,7 @@ public class DungeonMaze extends JavaPlugin {
 	}
 	
 	public static boolean isConstantChunk(String world, int chunkX, int chunkZ) {
-		if (lastWorld != world) {
+		if (!lastWorld.equals(world)) {
 			lastWorld = world;
 			constantChunks.clear();
 		}
@@ -626,7 +626,7 @@ public class DungeonMaze extends JavaPlugin {
 	}
 	
 	public static boolean isConstantRoom(String world, int roomX, int roomY, int roomZ) {
-		if (lastWorld != world) {
+		if (!lastWorld.equals(world)) {
 			lastWorld = world;
 			constantRooms.clear();
 		}
